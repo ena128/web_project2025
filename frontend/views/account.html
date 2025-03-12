@@ -1,0 +1,54 @@
+
+
+<body>
+
+    <!-- Glavni sadržaj stranice -->
+    <div class="container mt-4">
+        <!-- To-Do lista -->
+        <div class="todo-container">
+            <h2>Your To-Do List</h2>
+            <ul id="todo-list">
+                <li><input type="checkbox"> Task 1</li>
+                <li><input type="checkbox"> Task 2</li>
+                <li><input type="checkbox"> Task 3</li>
+                <li><input type="checkbox"> Task 4</li>
+            </ul>
+            <a class="btn btn-outline-primary">Submit as finished</a>
+        </div>
+
+        <!-- Završeni i nezavršeni zadaci -->
+        <div class="row mt-4">
+            <!-- Completed Tasks -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Completed Tasks</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item"><i class="bi bi-check text-primary"></i> Task 1</li>
+                            <li class="list-group-item"><i class="bi bi-check text-primary"></i> Task 2</li>
+                            <li class="list-group-item"><i class="bi bi-check text-primary"></i> Task 3</li>
+                            <li class="list-group-item"><i class="bi bi-check text-primary"></i> Task 4</li>
+                        </ul>
+                        <a href="#!" class="btn btn-outline-primary btn-sm mt-2">See all finished tasks</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Tasks -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Tasks</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item"><i class="bi bi-exclamation-circle text-warning"></i> Task 5</li>
+                            <li class="list-group-item"><i class="bi bi-exclamation-circle text-warning"></i> Task 6</li>
+                            <li class="list-group-item"><i class="bi bi-exclamation-circle text-warning"></i> Task 7</li>
+                        </ul>
+                        <a href="#!" class="btn btn-outline-primary btn-sm mt-2">See all tasks</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
