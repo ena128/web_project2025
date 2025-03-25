@@ -13,7 +13,7 @@ class UserDAO extends BaseDAO {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
+//milestone2
     
     public function createUser($name, $email, $password, $role = 'user') {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
