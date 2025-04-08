@@ -4,81 +4,88 @@ require_once __DIR__ . '\UserDAO.php';
 require_once __DIR__ . '\TaskDAO.php';
 require_once __DIR__ . '\CategoryDAO.php';
 require_once __DIR__ . '\PriorityDAO.php';
-require_once __DIR__ . '\ActivityLogsDAO.php'; 
-
+require_once __DIR__ . '\ActivityLogsDAO.php';
 
 $userDAO = new UserDAO();
 $taskDAO = new TaskDAO();
 $categoryDAO = new CategoryDAO();
 $priorityDAO = new PriorityDAO();
-$activityLogsDAO = new ActivityLogsDAO(); 
+$activityLogsDAO = new ActivityLogsDAO();
+
+echo "===== TESTING CRUD OPERATIONS =====\n";
 
 
+echo "\n Creating test \n";
+
+// Create a new user
 $newUser = [
-    'name' => 'Ena Slipicevic',
-    'email' => 'enaSS2251125@example.com',
-    'password' => password_hash('securepassword', PASSWORD_BCRYPT),
+    'name' => 'Ena',
+    'email' => 'zara1234567@example.com',
+    'password' => password_hash('password123', PASSWORD_BCRYPT),
     'role' => 'user'
 ];
-$newUserId = $userDAO->create($newUser);
+$userId = $userDAO->create($newUser);
+echo "Created User ID: $userId\n";
 
+// Create a new category
+$newCategory = ['name' => 'Personal'];
+$categoryId = $categoryDAO->create($newCategory);
+echo "Created Category ID: $categoryId\n";
 
-$activityLogsDAO->createLog($newUserId, 'Registered a new account');
+// Create a new priority
+$newPriority = ['name' => 'Medium', 'color' => '#FFA500'];
+$priorityId = $priorityDAO->create($newPriority);
+echo "Created Priority ID: $priorityId\n";
 
-
-$newCategory = [
-    'name' => 'Work Tasks'
-];
-$newCategoryId = $categoryDAO->create($newCategory);
-
-
-$activityLogsDAO->createLog($newUserId, 'Created a new category: Work Tasks');
-
-
-$newPriority = [
-    'name' => 'High',
-    'color' => '#FF0000'
-];
-$newPriorityId = $priorityDAO->create($newPriority);
-
-
-$activityLogsDAO->createLog($newUserId, 'Added a new priority: High');
-
-
+// Create a new task
 $newTask = [
-    'user_id' => $newUserId,
-    'title' => 'Complete project report',
-    'due_date' => '2025-04-10 15:00:00',
+    'user_id' => $userId,
+    'title' => 'Buy Groceries',
+    'due_date' => '2025-04-15 12:00:00',
     'status' => 'toDo',
-    'priority_id' => $newPriorityId,
-    'category_id' => $newCategoryId
+    'priority_id' => $priorityId,
+    'category_id' => $categoryId
 ];
-$taskDAO->create($newTask);
+$taskId = $taskDAO->create($newTask);
+echo "Created Task ID: $taskId\n";
 
+// **TEST READ**
+echo "\n[READ TEST]\n";
 
-$activityLogsDAO->createLog($newUserId, 'Created a new task: Complete project report');
+// Get user by ID
+$user = $userDAO->getById($userId);
+print_r($user);
 
-$users = $userDAO->getAll();
-echo "Users:\n";
-print_r($users);
+// Get task by ID
+$task = $taskDAO->getById($taskId);
+print_r($task);
 
+// **TEST UPDATE**
+echo "\n[UPDATE TEST]\n";
 
-$tasks = $taskDAO->getAll();
-echo "Tasks:\n";
-print_r($tasks);
+// Update user name
+$updateUser = ['name' => 'Updated Test User'];
+$userDAO->update($userId, $updateUser);
+$updatedUser = $userDAO->getById($userId);
+print_r($updatedUser);
 
+// Update task title
+$updateTask = ['title' => 'Updated Task Title'];
+$taskDAO->update($taskId, $updateTask);
+$updatedTask = $taskDAO->getById($taskId);
+print_r($updatedTask);
 
-$categories = $categoryDAO->getAll();
-echo "Categories:\n";
-print_r($categories);
+// **TEST DELETE**
+echo "\n[DELETE TEST]\n";
 
+// Delete task
+$taskDAO->delete($taskId);
+$deletedTask = $taskDAO->getById($taskId);
+echo $deletedTask ? "Task deletion failed!\n" : "Task deleted successfully.\n";
 
-$priorities = $priorityDAO->getAll();
-echo "Priorities:\n";
-print_r($priorities);
+/* Delete user
+$userDAO->delete($userId);
+$deletedUser = $userDAO->getById($userId);
+echo $deletedUser ? "User deletion failed!\n" : "User deleted successfully.\n";*/
 
-
-$logs = $activityLogsDAO->getAll();
-echo "Activity Logs:\n";
-print_r($logs);
 ?>
