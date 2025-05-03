@@ -7,25 +7,18 @@ class PriorityService extends BaseService {
         parent::__construct(new PriorityDAO());
     }
 
-    // Create a new priority
-    public function createPriority($priorityData) {
-        if ($this->validatePriorityData($priorityData)) {
-            return $this->create($priorityData); // Reuses BaseService's create method
-        }
-        throw new Exception("Invalid priority data.");
+ 
+public function validatePriorityData($data) {
+    if (empty($data['name'])) {
+        throw new Exception("Priority name is required.");
+    }
+    
+    if (empty($data['color'])) {
+        $data['color'] = '#FF0000'; 
     }
 
-    // Get all priorities
-    public function getPriorities() {
-        return $this->dao->getAll();
-    }
+    return $data;
+}
 
-    // Validate priority data
-    private function validatePriorityData($data) {
-        if (empty($data['name'])) {
-            throw new Exception("Priority name is required.");
-        }
-        return true;
-    }
 }
 ?>

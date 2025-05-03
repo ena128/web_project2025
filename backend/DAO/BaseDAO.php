@@ -4,24 +4,22 @@ class BaseDAO {
     protected $tableName;
     protected $primaryKey;
 
-    public function __construct($tableName, $primaryKey) {
+    public function __construct($tableName, $primaryKey = null) {
         $this->tableName = $tableName;
-        $this->primaryKey = $primaryKey;
-        
+    
+        // Ensure primaryKey is set, or try to detect it
+        if ($primaryKey === null) {
+            $this->primaryKey = $this->detectPrimaryKey();
+        } else {
+            $this->primaryKey = $primaryKey;
+        }
+    
         try {
             $dsn = "mysql:host=localhost;dbname=todomasterdb;charset=utf8mb4";
             $username = "root";
             $password = "";
             $this->connection = new PDO($dsn, $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            // Automatically detect primary key if not provided
-            if ($primaryKey === null) {
-                $this->primaryKey = $this->detectPrimaryKey();
-            } else {
-                $this->primaryKey = $primaryKey;
-            }
-
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }
@@ -63,15 +61,38 @@ class BaseDAO {
 
   
     public function update($id, $data) {
+        // Ensure $data is not empty
+        if (empty($data)) {
+            echo "No data provided to update<br>";
+            return false;
+        }
+    
+        // Dynamically generate the SET clause for SQL
         $fields = implode(", ", array_map(fn($key) => "$key = :$key", array_keys($data)));
-        $stmt = $this->connection->prepare("UPDATE $this->tableName SET $fields WHERE $this->primaryKey = :id");
+        
+        // Check the generated SQL for debugging purposes
+        $sql = "UPDATE $this->tableName SET $fields WHERE $this->primaryKey = :id";
+        echo "SQL Query: $sql<br>";
+        
+        $stmt = $this->connection->prepare($sql);
+    
+        // Bind the values for fields
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
+        
+        // Bind the primary key value
         $stmt->bindValue(":id", $id);
-        return $stmt->execute(); 
+        
+        // Execute the query and return the result
+        if ($stmt->execute()) {
+            echo "Update successful<br>";
+            return true;
+        } else {
+            echo "Update failed<br>";
+            return false;
+        }
     }
-
 
     public function delete($id) {
         $stmt = $this->connection->prepare("DELETE FROM $this->tableName WHERE $this->primaryKey = :id");
@@ -84,6 +105,10 @@ class BaseDAO {
         $stmt = $this->connection->prepare("SELECT COUNT(*) FROM $this->tableName");
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+    protected function fetchAll($query) {
+        $stmt = $this->connection->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

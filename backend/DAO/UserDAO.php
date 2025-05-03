@@ -27,9 +27,8 @@ class UserDAO extends BaseDAO {
     }
 
     
-    public function getAllUsers() {
-        return $this->fetchAll("SELECT * FROM users");
-    }
+
+    
 
    
     public function updateUser($user_id, $name, $email, $role) {

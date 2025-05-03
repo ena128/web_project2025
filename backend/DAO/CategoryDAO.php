@@ -6,41 +6,31 @@ class CategoryDAO extends BaseDAO {
         parent::__construct("categories", "category_id");
     }
 
-   
-    public function createCategory($name) {
-        $query = "INSERT INTO categories (name) VALUES (:name)";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute(['name' => $name]);
-        return $this->connection->lastInsertId();
-    }
-
-
+    // Get all categories
     public function getAllCategories() {
-        return $this->fetchAll("SELECT * FROM categories");
+        return $this->getAll();  // Uses getAll from BaseDAO
     }
 
-
+    // Get a category by its ID
     public function getCategoryById($category_id) {
         return $this->getById($category_id);
     }
 
- 
-    public function updateCategory($category_id, $name) {
-        $query = "UPDATE categories SET name = :name WHERE category_id = :category_id";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute([
-            'category_id' => $category_id,
-            'name' => $name
-        ]);
-        return $stmt->rowCount(); 
+    // Create a new category
+    public function createCategory($name) {
+        $queryData = ['name' => $name];
+        return $this->create($queryData);
     }
 
+    // Update a category
+    public function updateCategory($category_id, $name) {
+        $queryData = ['name' => $name];
+        return $this->update($category_id, $queryData);
+    }
 
+    // Delete a category
     public function deleteCategory($category_id) {
-        $stmt = $this->connection->prepare("DELETE FROM categories WHERE category_id = :category_id");
-        $stmt->bindParam(':category_id', $category_id);
-        $stmt->execute();
-        return $stmt->rowCount(); 
+        return $this->delete($category_id);
     }
 }
 ?>

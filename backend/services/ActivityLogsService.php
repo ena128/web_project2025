@@ -7,19 +7,6 @@ class ActivityLogsService extends BaseService {
         parent::__construct(new ActivityLogsDAO());
     }
 
-    // Get activity logs by user ID
-    public function getActivityLogsByUserId($userId) {
-        return $this->dao->getByUserId($userId);
-    }
-
-    // Create a new activity log
-    public function createActivityLog($logData) {
-        if ($this->validateLogData($logData)) {
-            return $this->create($logData); // Reuses BaseService's create method
-        }
-        throw new Exception("Invalid activity log data.");
-    }
-
     // Validate activity log data
     private function validateLogData($data) {
         if (empty($data['activity_type'])) {
@@ -30,5 +17,6 @@ class ActivityLogsService extends BaseService {
         }
         return true;
     }
+    
 }
 ?>
