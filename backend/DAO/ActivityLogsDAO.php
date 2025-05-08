@@ -6,29 +6,21 @@ class ActivityLogsDAO extends BaseDAO {
         parent::__construct("activitylogs", "log_id"); 
     }
 
-    public function getByUserId($user_id) {
-        $stmt = $this->connection->prepare("SELECT * FROM activitylogs WHERE user_id = :user_id ORDER BY timestamp DESC");
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Method to check if a user exists
+    private function userExists($userId) {
+        $userDAO = new UserDAO(); // Assuming you have a UserDAO to handle user-related queries
+        return $userDAO->getById($userId) !== null;
     }
 
-    public function createLog($user_id, $action) {
-        return $this->create([
-            "user_id" => $user_id,
-            "action" => $action,
-            "timestamp" => date("Y-m-d H:i:s")
-        ]);
-    }
+    // Override the create method to check if the user exists before adding the log
+    public function create($data) {
+        if (empty($data['user_id']) || !$this->userExists($data['user_id'])) {
+            throw new Exception("User with ID {$data['user_id']} does not exist.");
+        }
 
-    public function updateLog($log_id, $action) {
-        return $this->update($log_id, [
-            "action" => $action
-        ]);
-    }
-
-    public function deleteLog($log_id) {
-        return $this->delete($log_id);
+        // If the user exists, create the activity log
+        return parent::create($data);
     }
 }
+
 ?>

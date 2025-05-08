@@ -20,7 +20,7 @@ echo "\n Creating test \n";
 // Create a new user
 $newUser = [
     'name' => 'Ena',
-    'email' => 'zara1234567@example.com',
+    'email' => 'zara13114567@example.com',
     'password' => password_hash('password123', PASSWORD_BCRYPT),
     'role' => 'user'
 ];

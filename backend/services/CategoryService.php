@@ -7,18 +7,6 @@ class CategoryService extends BaseService {
         parent::__construct(new CategoryDAO());
     }
 
-    // Create a new category
-    public function createCategory($categoryData) {
-        if ($this->validateCategoryData($categoryData)) {
-            return $this->create($categoryData); // Reuses BaseService's create method
-        }
-        throw new Exception("Invalid category data.");
-    }
-
-    // Get all categories
-    public function getCategories() {
-        return $this->dao->getAll();
-    }
 
     // Validate category data
     private function validateCategoryData($data) {
