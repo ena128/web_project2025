@@ -1,26 +1,24 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../services/PriorityService.php';
+require_once __DIR__ . '/../services/CategoryService.php';
 
-Flight::set('priorityService', new PriorityService());
+Flight::set('categoryService', new CategoryService());
 
 /**
  * @OA\Get(
- *     path="/priorities",
- *     tags={"priorities"},
- *     summary="Get all priorities",
+ *     path="/categories",
+ *     tags={"categories"},
+ *     summary="Get all categories",
  *     @OA\Response(
  *         response=200,
- *         description="List of all priorities"
+ *         description="List of all categories"
  *     )
  * )
  */
-Flight::route('GET /priorities', function() {
+Flight::route('GET /categories', function() {
     try {
-        Flight::json(Flight::get('priorityService')->getAll());
+        Flight::json(Flight::get('categoryService')->getAll());
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
     }
@@ -28,33 +26,33 @@ Flight::route('GET /priorities', function() {
 
 /**
  * @OA\Get(
- *     path="/priorities/{id}",
- *     tags={"priorities"},
- *     summary="Get priority by ID",
+ *     path="/categories/{id}",
+ *     tags={"categories"},
+ *     summary="Get category by ID",
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
  *         required=true,
- *         description="Priority ID",
+ *         description="Category ID",
  *         @OA\Schema(type="integer", example=1)
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Priority found"
+ *         description="Category found"
  *     ),
  *     @OA\Response(
  *         response=404,
- *         description="Priority not found"
+ *         description="Category not found"
  *     )
  * )
  */
-Flight::route('GET /priorities/@id', function($id) {
+Flight::route('GET /categories/@id', function($id) {
     try {
-        $priority = Flight::get('priorityService')->getById($id);
-        if ($priority) {
-            Flight::json($priority);
+        $category = Flight::get('categoryService')->getById($id);
+        if ($category) {
+            Flight::json($category);
         } else {
-            Flight::json(["status" => "error", "message" => "Priority not found"], 404);
+            Flight::json(["status" => "error", "message" => "Category not found"], 404);
         }
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
@@ -63,29 +61,27 @@ Flight::route('GET /priorities/@id', function($id) {
 
 /**
  * @OA\Post(
- *     path="/priorities",
- *     tags={"priorities"},
- *     summary="Create a new priority",
+ *     path="/categories",
+ *     tags={"categories"},
+ *     summary="Create a new category",
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
  *             required={"name"},
- *             @OA\Property(property="name", type="string", example="High"),
- *             @OA\Property(property="color", type="string", example="#FF0000", default="#FF0000")
+ *             @OA\Property(property="name", type="string", example="Work"),
+ *             @OA\Property(property="id", type="integer", example="7")
  *         )
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Priority created successfully"
+ *         description="Category created successfully"
  *     )
  * )
  */
-
-// Create a new priority
-Flight::route('POST /priorities', function() {
+Flight::route('POST /categories', function() {
     try {
         $data = Flight::request()->data->getData();
-        Flight::json(Flight::get('priorityService')->create($data));
+        Flight::json(Flight::get('categoryService')->create($data));
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
     }
@@ -93,33 +89,34 @@ Flight::route('POST /priorities', function() {
 
 /**
  * @OA\Put(
- *     path="/priorities/{id}",
- *     tags={"priorities"},
- *     summary="Update a priority",
+ *     path="/categories/{id}",
+ *     tags={"categories"},
+ *     summary="Update a category",
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
  *         required=true,
- *         description="Priority ID",
+ *         description="Category ID",
  *         @OA\Schema(type="integer", example=1)
  *     ),
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
  *             required={"name"},
- *             @OA\Property(property="name", type="string", example="Updated Priority")
+ *             @OA\Property(property="name", type="string", example="School"),
+ *            
  *         )
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Priority updated successfully"
+ *         description="Category updated successfully"
  *     )
  * )
  */
-Flight::route('PUT /priorities/@id', function($id) {
+Flight::route('PUT /categories/@id', function($id) {
     try {
         $data = Flight::request()->data->getData();
-        Flight::json(Flight::get('priorityService')->update($id, $data));
+        Flight::json(Flight::get('categoryService')->update($id, $data));
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
     }
@@ -127,25 +124,25 @@ Flight::route('PUT /priorities/@id', function($id) {
 
 /**
  * @OA\Delete(
- *     path="/priorities/{id}",
- *     tags={"priorities"},
- *     summary="Delete a priority",
+ *     path="/categories/{id}",
+ *     tags={"categories"},
+ *     summary="Delete a category",
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
  *         required=true,
- *         description="Priority ID",
+ *         description="Category ID",
  *         @OA\Schema(type="integer", example=1)
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Priority deleted successfully"
+ *         description="Category deleted successfully"
  *     )
  * )
  */
-Flight::route('DELETE /priorities/@id', function($id) {
+Flight::route('DELETE /categories/@id', function($id) {
     try {
-        Flight::json(Flight::get('priorityService')->delete($id));
+        Flight::json(Flight::get('categoryService')->delete($id));
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
     }
