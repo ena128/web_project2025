@@ -5,26 +5,26 @@ class BaseDAO {
     protected $primaryKey;
 
     public function __construct($tableName, $primaryKey = null) {
-        $this->tableName = $tableName;
-    
-        // Ensure primaryKey is set, or try to detect it
-        if ($primaryKey === null) {
-            $this->primaryKey = $this->detectPrimaryKey();
-        } else {
-            $this->primaryKey = $primaryKey;
-        }
-    
-        try {
-            $dsn = "mysql:host=localhost;dbname=todomasterdb;charset=utf8mb4";
-            $username = "root";
-            $password = "";
-            $this->connection = new PDO($dsn, $username, $password);
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
-        }
+    $this->tableName = $tableName;
+
+    // ✅ Establish DB connection first
+    try {
+        $dsn = "mysql:host=localhost;dbname=todomasterdb;charset=utf8mb4";
+        $username = "root";
+        $password = "";
+        $this->connection = new PDO($dsn, $username, $password);
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+        die("Database connection failed: " . $e->getMessage());
     }
 
+    // ✅ Now it's safe to detect primary key
+    if ($primaryKey === null) {
+        $this->primaryKey = $this->detectPrimaryKey();
+    } else {
+        $this->primaryKey = $primaryKey;
+    }
+}
 
     private function detectPrimaryKey() {
         $stmt = $this->connection->prepare("SHOW KEYS FROM $this->tableName WHERE Key_name = 'PRIMARY'");
@@ -109,6 +109,11 @@ class BaseDAO {
     protected function fetchAll($query) {
         $stmt = $this->connection->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function query_unique($sql, $params = []) {
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

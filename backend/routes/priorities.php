@@ -19,7 +19,12 @@ Flight::set('priorityService', new PriorityService());
  * )
  */
 Flight::route('GET /priorities', function() {
-    Flight::json(Flight::get('priorityService')->getAll());
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]);
+    try {
+        Flight::json(Flight::get('priorityService')->getAll());
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
 });
 
 /**
@@ -45,7 +50,17 @@ Flight::route('GET /priorities', function() {
  * )
  */
 Flight::route('GET /priorities/@id', function($id) {
-    Flight::json(Flight::get('priorityService')->getById($id));
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]);
+    try {
+        $priority = Flight::get('priorityService')->getById($id);
+        if ($priority) {
+            Flight::json($priority);
+        } else {
+            Flight::json(["status" => "error", "message" => "Priority not found"], 404);
+        }
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
 });
 
 /**
@@ -67,14 +82,15 @@ Flight::route('GET /priorities/@id', function($id) {
  *     )
  * )
  */
-
-
-// create a new priority
 Flight::route('POST /priorities', function() {
-    $data = Flight::request()->data->getData();
-    Flight::json(Flight::get('priorityService')->create($data));
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    try {
+        $data = Flight::request()->data->getData();
+        Flight::json(Flight::get('priorityService')->create($data));
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
 });
-
 
 /**
  * @OA\Put(
@@ -102,8 +118,13 @@ Flight::route('POST /priorities', function() {
  * )
  */
 Flight::route('PUT /priorities/@id', function($id) {
-    $data = Flight::request()->data->getData();
-    Flight::json(Flight::get('priorityService')->update($id, $data));
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    try {
+        $data = Flight::request()->data->getData();
+        Flight::json(Flight::get('priorityService')->update($id, $data));
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
 });
 
 /**
@@ -125,6 +146,11 @@ Flight::route('PUT /priorities/@id', function($id) {
  * )
  */
 Flight::route('DELETE /priorities/@id', function($id) {
-    Flight::json(Flight::get('priorityService')->delete($id));
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
+    try {
+        Flight::json(Flight::get('priorityService')->delete($id));
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
 });
 ?>

@@ -4,7 +4,6 @@ require_once __DIR__ . '/../services/TaskService.php';
 
 Flight::set('TaskService', new TaskService());
 
-// Get all tasks
 /**
  * @OA\Get(
  *     path="/tasks",
@@ -17,6 +16,7 @@ Flight::set('TaskService', new TaskService());
  * )
  */
 Flight::route('GET /tasks', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     try {
         Flight::json(Flight::get('TaskService')->getAll());
     } catch (Exception $e) {
@@ -24,7 +24,6 @@ Flight::route('GET /tasks', function() {
     }
 });
 
-// Get task by ID
 /**
  * @OA\Get(
  *     path="/tasks/{id}",
@@ -48,6 +47,7 @@ Flight::route('GET /tasks', function() {
  * )
  */
 Flight::route('GET /tasks/@id', function($id){
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     try {
         $task = Flight::get('TaskService')->getById($id);
         if ($task) {
@@ -60,7 +60,6 @@ Flight::route('GET /tasks/@id', function($id){
     }
 });
 
-// Create task
 /**
  * @OA\Post(
  *     path="/tasks",
@@ -83,6 +82,7 @@ Flight::route('GET /tasks/@id', function($id){
  * )
  */
 Flight::route('POST /tasks', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
         $task = Flight::get('TaskService')->create($data);
@@ -92,7 +92,6 @@ Flight::route('POST /tasks', function() {
     }
 });
 
-// Update task by ID
 /**
  * @OA\Put(
  *     path="/tasks/{id}",
@@ -122,6 +121,7 @@ Flight::route('POST /tasks', function() {
  * )
  */
 Flight::route('PUT /tasks/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
         $task = Flight::get('TaskService')->update($id, $data);
@@ -135,7 +135,6 @@ Flight::route('PUT /tasks/@id', function($id) {
     }
 });
 
-// Delete task by ID
 /**
  * @OA\Delete(
  *     path="/tasks/{id}",
@@ -155,6 +154,7 @@ Flight::route('PUT /tasks/@id', function($id) {
  * )
  */
 Flight::route('DELETE /tasks/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $result = Flight::get('TaskService')->delete($id);
         if ($result) {
@@ -167,7 +167,6 @@ Flight::route('DELETE /tasks/@id', function($id) {
     }
 });
 
-// Get tasks by user ID
 /**
  * @OA\Get(
  *     path="/tasks/user/{user_id}",
@@ -187,6 +186,7 @@ Flight::route('DELETE /tasks/@id', function($id) {
  * )
  */
 Flight::route('GET /tasks/user/@user_id', function($user_id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     try {
         $tasks = Flight::get('TaskService')->getByUserId($user_id);
         Flight::json($tasks);
