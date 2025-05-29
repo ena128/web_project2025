@@ -10,35 +10,57 @@
             </div>
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-6">
-                    <form id="contactForm">
-                        <!-- Email address input-->
-                        <div class="form-floating mb-3">
-                            <input class="form-control" id="email" type="email" placeholder="name@example.com" required />
-                            <label for="email">Username or email address</label>
-                            <div class="invalid-feedback">An email is required.</div>
-                            <div class="invalid-feedback">Email is not valid.</div>
-                        </div>
-                        <!-- Password input-->
-                        <div class="form-floating mb-3">
-                            <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" required />
-                            <label for="phone">Password</label>
-                            <div class="invalid-feedback">Password is invalid</div>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="show-password">
-                            <label class="form-check-label" for="show-password">Remember me</label>
-                        </div>
+                    <form id="loginForm">
+  <div class="form-floating mb-3">
+    <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" required />
+    <label for="email">Username or email address</label>
+    <div class="invalid-feedback">An email is required.</div>
+    <div class="invalid-feedback">Email is not valid.</div>
+  </div>
+  <div class="form-floating mb-3">
+    <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
+    <label for="password">Password</label>
+    <div class="invalid-feedback">Password is invalid</div>
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="show-password" />
+    <label class="form-check-label" for="show-password">Remember me</label>
+  </div>
+  <button class="btn btn-primary btn-lg" type="submit">Login</button>
+</form>
+<script>
+  // Show/hide password toggle
+  document.getElementById('show-password').addEventListener('change', function() {
+    const passField = document.getElementById('password');
+    passField.type = this.checked ? 'text' : 'password';
+  });
 
-                        <!-- Forgot Password -->
-                        <div class="mb-3 text-end">
-                            <a href="#forgot-password" class="text-decoration-none">Forgot Password?</a>
+  // Handle login form submission
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-                        </div>
-                        
-                        
-                        <!-- Submit Button-->
-                        <div class="d-grid"><button class="btn btn-primary btn-lg" id="submitButton" type="submit">Login</button></div>
-                    </form>
+    try {
+      const response = await fetch('http://localhost/web_2025/backend/api/login.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '/dashboard.php';
+      } else {
+        alert(data.error || 'Login failed');
+      }
+    } catch (err) {
+      alert('An error occurred. Try again later.');
+    }
+  });
+</script>
                 </div>
             </div>
         </div>

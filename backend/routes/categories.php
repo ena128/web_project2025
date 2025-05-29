@@ -17,6 +17,7 @@ Flight::set('categoryService', new CategoryService());
  * )
  */
 Flight::route('GET /categories', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]);
     try {
         Flight::json(Flight::get('categoryService')->getAll());
     } catch (Exception $e) {
@@ -47,6 +48,7 @@ Flight::route('GET /categories', function() {
  * )
  */
 Flight::route('GET /categories/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]);
     try {
         $category = Flight::get('categoryService')->getById($id);
         if ($category) {
@@ -79,6 +81,7 @@ Flight::route('GET /categories/@id', function($id) {
  * )
  */
 Flight::route('POST /categories', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
         Flight::json(Flight::get('categoryService')->create($data));
@@ -103,8 +106,7 @@ Flight::route('POST /categories', function() {
  *         required=true,
  *         @OA\JsonContent(
  *             required={"name"},
- *             @OA\Property(property="name", type="string", example="School"),
- *            
+ *             @OA\Property(property="name", type="string", example="School")
  *         )
  *     ),
  *     @OA\Response(
@@ -114,6 +116,7 @@ Flight::route('POST /categories', function() {
  * )
  */
 Flight::route('PUT /categories/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
         Flight::json(Flight::get('categoryService')->update($id, $data));
@@ -141,6 +144,7 @@ Flight::route('PUT /categories/@id', function($id) {
  * )
  */
 Flight::route('DELETE /categories/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         Flight::json(Flight::get('categoryService')->delete($id));
     } catch (Exception $e) {

@@ -16,6 +16,8 @@ Flight::set('UserService', new UserService());
  * )
  */
 Flight::route('GET /users', function () {
+    Flight::auth_middleware()->verifyToken();
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         Flight::json(Flight::get('UserService')->getAll());
     } catch (Exception $e) {
@@ -46,10 +48,10 @@ Flight::route('GET /users', function () {
  * )
  */
 Flight::route('GET /users/@id', function ($id) {
+    Flight::auth_middleware()->verifyToken();
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     try {
-        $userService = Flight::get('UserService');
-        $user = $userService->getById($id);
-
+        $user = Flight::get('UserService')->getById($id);
         if ($user) {
             Flight::json($user);
         } else {
@@ -82,10 +84,12 @@ Flight::route('GET /users/@id', function ($id) {
  * )
  */
 Flight::route('POST /users', function () {
+    Flight::auth_middleware()->verifyToken();
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
         $newUser = Flight::get('UserService')->create($data);
-        Flight::json($newUser, 201);
+        Flight::json(['status' => 'success', 'message' => 'User created successfully', 'data' => $newUser], 201);
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
     }
@@ -120,15 +124,15 @@ Flight::route('POST /users', function () {
  * )
  */
 Flight::route('PUT /users/@id', function ($id) {
+    Flight::auth_middleware()->verifyToken();
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
         $data = Flight::request()->data->getData();
-        $userService = Flight::get('UserService');
-        $updatedUser = $userService->update($id, $data);
-
+        $updatedUser = Flight::get('UserService')->update($id, $data);
         if ($updatedUser) {
             Flight::json(['status' => 'success', 'message' => 'User updated successfully', 'data' => $updatedUser]);
         } else {
-            Flight::json(['status' => 'error', 'message' => 'Failed to update user'], 400);
+            Flight::json(['status' => 'error', 'message' => 'User not found'], 404);
         }
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
@@ -154,20 +158,14 @@ Flight::route('PUT /users/@id', function ($id) {
  * )
  */
 Flight::route('DELETE /users/@id', function ($id) {
+    Flight::auth_middleware()->verifyToken();
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     try {
-        $userService = Flight::get('UserService');
-        $result = $userService->delete($id);
-
+        $result = Flight::get('UserService')->delete($id);
         if ($result) {
-            Flight::json([
-                'status' => 'success',
-                'message' => 'User deleted successfully'
-            ]);
+            Flight::json(['status' => 'success', 'message' => 'User deleted successfully']);
         } else {
-            Flight::json([
-                'status' => 'error',
-                'message' => 'Failed to delete user'
-            ], 400);
+            Flight::json(['status' => 'error', 'message' => 'User not found'], 404);
         }
     } catch (Exception $e) {
         Flight::json(['error' => $e->getMessage()], 500);
